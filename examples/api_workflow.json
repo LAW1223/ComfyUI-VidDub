@@ -1,0 +1,38 @@
+{
+  "1": {
+    "class_type": "LoadVideo",
+    "inputs": {
+      "file": "source.mp4"
+    }
+  },
+  "2": {
+    "class_type": "LoadAudio",
+    "inputs": {
+      "audio": "replacement.wav"
+    }
+  },
+  "3": {
+    "class_type": "VidDubVideo",
+    "inputs": {
+      "source_video": [
+        "1",
+        0
+      ],
+      "replacement_audio": [
+        "2",
+        0
+      ],
+      "viddub_python": "/home/user/viddub-venv/bin/python",
+      "viddub_root": "/home/user/VidDub",
+      "model": "/home/user/VidDub/weights/VidDub",
+      "weight_root": "/home/user/VidDub/weights",
+      "mode": "auto",
+      "seed": 0,
+      "overlap": 17,
+      "feather": 15,
+      "color_harmonization": true,
+      "device": "cuda",
+      "timeout_seconds": 7200
+    }
+  }
+}
