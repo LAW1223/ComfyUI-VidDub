@@ -56,7 +56,7 @@ class RuntimeTests(unittest.TestCase):
         python, validated_project, validated_weights = validate_runtime_paths(
             sys.executable, str(project), str(weights)
         )
-        self.assertEqual(python, Path(sys.executable).resolve())
+        self.assertEqual(python, Path(sys.executable).absolute())
         self.assertEqual(validated_project, project.resolve())
         self.assertEqual(validated_weights, weights.resolve())
 
@@ -65,6 +65,16 @@ class RuntimeTests(unittest.TestCase):
         weights.mkdir()
         with self.assertRaisesRegex(VidDubNodeError, "inference script not found"):
             validate_runtime_paths(sys.executable, str(self.root), str(weights))
+
+    def test_virtualenv_python_symlink_is_not_resolved(self):
+        project, weights = make_runtime(self.root)
+        fake_python = self.root / "venv" / "bin" / "python"
+        fake_python.parent.mkdir(parents=True)
+        fake_python.symlink_to(sys.executable)
+        python, _, _ = validate_runtime_paths(
+            str(fake_python), str(project), str(weights)
+        )
+        self.assertEqual(python, fake_python.absolute())
 
     def test_build_command_uses_argument_list(self):
         project, weights = make_runtime(self.root)

@@ -21,10 +21,13 @@ def resolve_executable(value: str) -> Path:
     """Resolve an absolute executable path or a command available on PATH."""
     expanded = Path(value).expanduser()
     if expanded.is_file():
-        return expanded.resolve()
+        # Do not resolve a virtualenv's python symlink: Python locates
+        # pyvenv.cfg from the invoked path, so resolving it would silently run
+        # the base interpreter without the environment's dependencies.
+        return expanded.absolute()
     resolved = shutil.which(value)
     if resolved:
-        return Path(resolved).resolve()
+        return Path(resolved).absolute()
     raise VidDubNodeError(
         f"VidDub Python executable not found: {value!r}. "
         "Use the Python binary from the environment where VidDub is installed."

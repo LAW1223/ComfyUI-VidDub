@@ -61,6 +61,16 @@ huggingface-cli download AIPeanutman/VidDub \
   --local-dir ~/VidDub/weights/VidDub
 ```
 
+On a headless Linux server, `mediapipe` may install the non-headless OpenCV
+wheel and fail at import time with `libGL.so.1` missing. Replace that wheel
+after installing the requirements:
+
+```bash
+pip uninstall -y opencv-contrib-python opencv-python
+pip install --force-reinstall --no-deps \
+  opencv-contrib-python-headless==4.11.0.86
+```
+
 Verify the CLI once before using ComfyUI:
 
 ```bash
@@ -108,6 +118,23 @@ export VIDDUB_WEIGHT_ROOT=/home/user/VidDub/weights
 
 For API use, copy `examples/api_workflow.json`, place `source.mp4` and
 `replacement.wav` in ComfyUI's input directory, and replace the example paths.
+
+## Validation
+
+The complete node path has been validated on an NVIDIA H20, not only with
+mocked subprocesses:
+
+- ComfyUI revision `f4f3dedddea4e7ac8e79589a1362649fc2bf3377`;
+- PyTorch 2.7.1+cu126 and the official `FULL2_DMD_R4@100` release;
+- native ComfyUI `VIDEO` and `AUDIO` inputs through an 81-frame, 1920×1080,
+  29.97 FPS clip;
+- external VidDub inference, saved MP4, native ComfyUI `VIDEO` output, and
+  exact 81-frame output preservation.
+
+The measured end-to-end node runtime was about four minutes, including input
+materialization, model loading, inference, encoding, and output loading. It is
+hardware- and storage-dependent and is not the paper's prepared-input
+throughput measurement.
 
 ## Windows
 
